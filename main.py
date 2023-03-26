@@ -1,9 +1,10 @@
 from flask_cors import CORS
-from saakd_api import app, db
+from flask import render_template
+from kaedenn_api import app, db
 
-from saakd_api.api.todo import todo_bp
+from kaedenn_api.api.todo import todo_bp
 
-from saakd_api.model.todos import init_todos
+from kaedenn_api.model.todos import init_todos
 
 app.register_blueprint(todo_bp)
 
@@ -13,7 +14,9 @@ def init_db():
         db.create_all()
         init_todos()
 
-
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == "__main__":
     cors = CORS(app)
