@@ -1,10 +1,10 @@
 from flask_cors import CORS
 from flask import render_template
-from kaedenn_api import app, db
+from nighthawkguessr_api import app, db
 
-from kaedenn_api.api.todo import todo_bp
+from nighthawkguessr_api.api.todo import todo_bp
 
-from kaedenn_api.model.todos import init_todos
+from nighthawkguessr_api.model.todos import init_todos
 
 app.register_blueprint(todo_bp)
 
