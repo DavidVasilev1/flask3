@@ -6,4 +6,6 @@ from ..model.images import Images
 images_bp = Blueprint("images", __name__)
 images_api = Api(images_bp)
 
-class im
+class ImagesAPI(Resource):
+    def get(self):
+        
