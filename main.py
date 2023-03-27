@@ -6,7 +6,11 @@ from nighthawkguessr_api.api.todo import todo_bp
 
 from nighthawkguessr_api.model.todos import init_todos
 
+from nighthawkguessr_api.api.leaderboard import leaderboard_bp
+
+
 app.register_blueprint(todo_bp)
+app.register_blueprint(leaderboard_bp)
 
 @app.before_first_request
 def init_db():
