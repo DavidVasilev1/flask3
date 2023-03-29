@@ -8,4 +8,8 @@ images_api = Api(images_bp)
 
 class ImagesAPI(Resource):
     def get(self):
+        id = request.args.get("id")
+        image = db.session.query(Images).get(id)
+        if image:
+            path = image.imagePath
         

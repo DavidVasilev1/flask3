@@ -1,12 +1,13 @@
 from sqlalchemy import Column, Integer, String, Text, LargeBinary
 from .. import db
+from pathlib import Path
 
 
 class Images(db.Model):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True)
     _imagePath = Column(Text, unique=True, nullable=False)
-    _xCoord = Column(String(255), nullable=False)
+    _xCoord = Column(Integer, nullable=False)
     _yCoord = Column(Integer, nullable=False)
     _difficulty = Column(Integer, nullable=False)
 
@@ -59,3 +60,18 @@ class Images(db.Model):
 
     def to_dict(self):
         return {"id": self.id, "imagePath": self._imagePath, "xCoord": self._xCoord, "yCoord": self._yCoord, "difficulty": self._difficulty}
+
+
+def initEasyImages():
+    image_dir = Path.cwd().parents[1]/"images/easy"
+    images_paths = [i.as_posix() for i in image_dir.iterdir()]
+    images = []
+    for image in images_paths:
+        images.append(Images(image, 250, 250, 1))
+    print()
+# def initMedImages():
+# def initHardImages():
+
+# def initImages():
+
+initEasyImages()

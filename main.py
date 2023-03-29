@@ -4,7 +4,7 @@ from nighthawkguessr_api import app, db
 
 from nighthawkguessr_api.api.todo import todo_bp
 
-from nighthawkguessr_api.model.todos import init_todos
+from nighthawkguessr_api.model.images import initEasyImages
 
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
 
@@ -16,7 +16,7 @@ app.register_blueprint(leaderboard_bp)
 def init_db():
     with app.app_context():
         db.create_all()
-        init_todos()
+        initEasyImages()
 
 @app.route('/')
 def index():
