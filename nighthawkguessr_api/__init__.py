@@ -2,6 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import os
 
 """
 These object can be used throughout project.
@@ -12,9 +13,9 @@ These object can be used throughout project.
 # Setup of key Flask object (app)
 app = Flask(__name__)
 # Setup SQLAlchemy object and properties for the database (db)
-dbURI = "sqlite:///sqlite.db"
+file_path = os.path.abspath(os.getcwd())+"\\nighthawkguessr_api\\volumes\sqlite.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+file_path
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_DATABASE_URI"] = dbURI
 app.config["SECRET_KEY"] = "SECRET_KEY"
 db = SQLAlchemy(app)
 Migrate(app, db)

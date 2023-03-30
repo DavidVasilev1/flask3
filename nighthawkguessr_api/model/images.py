@@ -1,10 +1,11 @@
 from sqlalchemy import Column, Integer, String, Text, LargeBinary
+from sqlalchemy.exc import IntegrityError
 from .. import db
 from pathlib import Path
 
 
 class Images(db.Model):
-    __tablename__ = "images"
+    __tablename__ = 'images'
     id = Column(Integer, primary_key=True)
     _imagePath = Column(Text, unique=True, nullable=False)
     _xCoord = Column(Integer, nullable=False)
@@ -61,14 +62,64 @@ class Images(db.Model):
     def to_dict(self):
         return {"id": self.id, "imagePath": self._imagePath, "xCoord": self._xCoord, "yCoord": self._yCoord, "difficulty": self._difficulty}
 
+    def create(self):
+        try:
+            # creates a person object from User(db.Model) class, passes initializers
+            db.session.add(self)  # add prepares to persist person object to Users table
+            db.session.commit()  # SqlAlchemy "unit of work pattern" requires a manual commit
+            return self
+        except IntegrityError:
+            db.session.remove()
+            return None
+
+    # CRUD read converts self to dictionary
+    # returns dictionary
+    def read(self):
+        return {
+            "path": self.imagePath,
+            "xCoord": self.xCoord,
+            "yCoord": self.yCoord,
+            "difficulty": self.difficulty
+        }
+
+    # CRUD update: updates user name, password, phone
+    # returns self
+    def update(self, path="", xCoord="", yCoord="", difficulty=""):
+        """only updates values with length"""
+        xCoord = int(xCoord)
+        yCoord = int(yCoord)
+        if path:
+            self.imagePath = path
+        if xCoord >= 0:
+            self.xCoord = xCoord
+        if yCoord >= 0:
+            self.yCoord = yCoord
+        if difficulty in range(3):
+            self.difficulty = difficulty
+        db.session.commit()
+        return self
+
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+        return None
+
 
 def initEasyImages():
-    image_dir = Path.cwd().parents[1]/"images/easy"
+    db.create_all()
+    image_dir = Path.cwd()/"images/easy"
     images_paths = [i.as_posix() for i in image_dir.iterdir()]
-    images = []
-    for image in images_paths:
-        images.append(Images(image, 250, 250, 1))
-    print()
+    images = [Images(image, 250, 250, 1) for image in images_paths]
+    for image in images:
+        try:
+            image.create()
+            print("Successfully added entry")
+        except:
+            db.session.remove()
+            print("Error adding image: ", image.imagePath)
+    
+
 # def initMedImages():
 # def initHardImages():
 

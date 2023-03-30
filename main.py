@@ -15,7 +15,6 @@ app.register_blueprint(leaderboard_bp)
 @app.before_first_request
 def init_db():
     with app.app_context():
-        db.create_all()
         initEasyImages()
 
 @app.route('/')
