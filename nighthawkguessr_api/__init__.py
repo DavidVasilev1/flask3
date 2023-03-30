@@ -2,6 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from pathlib import Path
 import os
 
 """
@@ -12,6 +13,7 @@ These object can be used throughout project.
 
 # Setup of key Flask object (app)
 app = Flask(__name__)
+project_path = Path.cwd()
 # Setup SQLAlchemy object and properties for the database (db)
 file_path = os.path.abspath(os.getcwd())+"\\nighthawkguessr_api\\volumes\sqlite.db"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+file_path
