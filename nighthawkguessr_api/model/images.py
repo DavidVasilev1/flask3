@@ -107,7 +107,7 @@ class Images(db.Model):
 
 
 def initEasyImages():
-    db.create_all()
+    
     image_dir = Path.cwd()/"images/easy"
     images_paths = [i.name for i in image_dir.iterdir()]
     images = [Images("image/easy/" + image, 250, 250, 1) for image in images_paths]
