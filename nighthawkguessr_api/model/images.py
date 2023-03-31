@@ -119,10 +119,3 @@ def initEasyImages():
             db.session.remove()
             print("Error adding image: ", image.imagePath)
     
-
-# def initMedImages():
-# def initHardImages():
-
-# def initImages():
-
-initEasyImages()
