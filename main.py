@@ -6,17 +6,22 @@ from nighthawkguessr_api.api.todo import todo_bp
 from flask import send_from_directory
 from nighthawkguessr_api.model.images import initEasyImages
 
+from nighthawkguessr_api.model.leaderboards import init_leaderboards
+
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
 
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
 
+
 @app.before_first_request
 def init_db():
     with app.app_context():
         db.create_all()
         initEasyImages()
+        init_leaderboards()
+
 
 @app.route('/')
 def index():
@@ -38,11 +43,12 @@ def index():
 #     render_template(index.html,ob=self.img)
 
 
-
 @app.route('/static/images/easy/<path:path>')
 def send_report(path):
     full_filename = project_path.as_posix() + path
-    return render_template("image_template.html", user_image = path) #url_for('static', filename=f'images/easy/{path}')
+    # url_for('static', filename=f'images/easy/{path}')
+    return render_template("image_template.html", user_image=path)
+
 
 if __name__ == "__main__":
     cors = CORS(app)
