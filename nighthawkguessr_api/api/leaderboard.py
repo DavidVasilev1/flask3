@@ -9,8 +9,10 @@ leaderboard_api = Api(leaderboard_bp)
 
 class LeaderboardAPI(Resource):
     def get(self):
-        username = request.args.get("username")
+        username = request.args.get("id")
+        print(username, "uid")
         leaderboard = db.session.query(Leaderboard).get(username)
+        print(leaderboard, "?")
         if leaderboard:
             return leaderboard.to_dict()
         return {"message": leaderboard}, 404
@@ -24,7 +26,8 @@ class LeaderboardAPI(Resource):
         parser.add_argument("pointsHard", required=True, type=int)
         args = parser.parse_args()
 
-        leaderboard = Leaderboard(args["username"], args["password"], args["pointsEasy"], args["pointsMedium"], args["pointsHard"])
+        leaderboard = Leaderboard(args["username"], args["password"],
+                                  args["pointsEasy"], args["pointsMedium"], args["pointsHard"])
         try:
             db.session.add(leaderboard)
             db.session.commit()
