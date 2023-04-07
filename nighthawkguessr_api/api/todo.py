@@ -11,6 +11,7 @@ class TodoAPI(Resource):
     def get(self):
         id = request.args.get("id")
         todo = db.session.query(Todo).get(id)
+        print(todo)
         if todo:
             return todo.to_dict()
         return {"message": "todo not found"}, 404
