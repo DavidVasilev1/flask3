@@ -110,7 +110,7 @@ def initEasyImages():
     
     image_dir = Path.cwd()/"images/easy"
     images_paths = [i.name for i in image_dir.iterdir()]
-    images = [Images("image/easy/" + image, 250, 250, 1) for image in images_paths]
+    images = [Images("images/easy/" + image, 250, 250, 0) for image in images_paths]
     for image in images:
         try:
             image.create()

@@ -9,10 +9,12 @@ from nighthawkguessr_api.model.images import initEasyImages
 from nighthawkguessr_api.model.leaderboards import init_leaderboards
 
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
+from nighthawkguessr_api.api.images import images_bp
 
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
+app.register_blueprint(images_bp)
 
 
 @app.before_first_request
