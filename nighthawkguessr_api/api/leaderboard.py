@@ -41,22 +41,18 @@ class LeaderboardAPI(Resource):
             return {"message": f"server error: {e}"}, 500
 
     def put(self):
-        # parser = reqparse.RequestParser()
-        # parser.add_argument("username", required=True, type=str)
-        # args = parser.parse_args()
         username = request.get_json().get("username")
         print(username, "uid")
 
         try:
-            # leaderboard = db.session.query(Leaderboard).get(args["username"])
             user = find_by_username(username)
             if user:
                 user.pointsEasy = int(request.get_json().get(
-                    "pointsEasy"))  # args["pointsEasy"]
+                    "pointsEasy"))
                 user.pointsMedium = int(request.get_json().get(
-                    "pointsMedium"))  # args["pointsMedium"]
+                    "pointsMedium"))
                 user.pointsHard = int(request.get_json().get(
-                    "pointsHard"))  # args["pointsHard"]
+                    "pointsHard"))
                 db.session.commit()
                 return user.to_dict(), 201
             else:
@@ -66,14 +62,10 @@ class LeaderboardAPI(Resource):
             return {"message": f"server error: {e}"}, 500
 
     def delete(self):
-        # parser = reqparse.RequestParser()
-        # parser.add_argument("username", required=True, type=str)
-        # args = parser.parse_args()
         username = request.get_json().get("username")
         print(username, "uid")
 
         try:
-            # leaderboard = db.session.query(Leaderboard).get(args["username"])
             user = find_by_username(username)
             if user:
                 db.session.delete(user)

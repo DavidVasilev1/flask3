@@ -137,21 +137,7 @@ class Leaderboard(db.Model):
         return None
 
 
-# def init_leaderboards():
-#     username = "bob".strip().lower()
-#     existing_user = Leaderboard.query.filter_by(username=username).first()
-#     print(existing_user)
-#     if existing_user:
-#         return
-#     else:
-#         l1 = Leaderboard(username="bob", password="apple",
-#                          pointsEasy=2, pointsMedium=5, pointsHard=3)
-#         db.session.add(l1)
-#         db.session.commit()
-
-
 def init_leaderboards():
-    # with app.app_context():
     """Create database and tables"""
     db.create_all()
     """Tester data for table"""
