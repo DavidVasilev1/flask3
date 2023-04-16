@@ -47,12 +47,9 @@ class LeaderboardAPI(Resource):
         try:
             user = find_by_username(username)
             if user:
-                user.pointsEasy = int(request.get_json().get(
-                    "pointsEasy"))
-                user.pointsMedium = int(request.get_json().get(
-                    "pointsMedium"))
-                user.pointsHard = int(request.get_json().get(
-                    "pointsHard"))
+                user.pointsEasy = int(request.get_json().get("pointsEasy"))
+                user.pointsMedium = int(request.get_json().get("pointsMedium"))
+                user.pointsHard = int(request.get_json().get("pointsHard"))
                 db.session.commit()
                 return user.to_dict(), 201
             else:
