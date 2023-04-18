@@ -16,7 +16,8 @@ import requests
 import string
 import json 
 import http.cookies as cookies
-  
+from nighthawkguessr_api import app
+
 from model.auth import User, token_required
 
 

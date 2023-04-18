@@ -30,6 +30,8 @@ def load_user(user_id):
 # The user object is then stored in the current session,  allowing the application to keep track of the user's identity and state between requests.
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+    __table_args__ = {'extend_existing': True}  # Add this line
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
