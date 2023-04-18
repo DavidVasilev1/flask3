@@ -10,15 +10,19 @@ def get_user_list():
     users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard)] for user in Leaderboard.query.all()]
     return users_list
 
+def find_by_username(username):
+    users = Leaderboard.query.filter_by(_username=username).all()
+    return users[0]
+
+
 class LeaderboardAPI(Resource):
     def get(self):
-        username = request.args.get("id")
+        username = request.get_json().get("username")
         print(username, "uid")
-        leaderboard = db.session.query(Leaderboard).get(username)
-        print(leaderboard, "?")
-        if leaderboard:
-            return leaderboard.to_dict()
-        return {"message": leaderboard}, 404
+        user = find_by_username(username)
+        if user:
+            return user.to_dict()
+        return {"message": user}, 404
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -40,17 +44,17 @@ class LeaderboardAPI(Resource):
             return {"message": f"server error: {e}"}, 500
 
     def put(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("username", required=True, type=str)
-        args = parser.parse_args()
+        username = request.get_json().get("username")
+        print(username, "uid")
 
         try:
-            leaderboard = db.session.query(Leaderboard).get(args["username"])
-            if leaderboard:
-                leaderboard.pointsEasy = args["pointsEasy"]
-                leaderboard.pointsMedium = args["pointsMedium"]
-                leaderboard.pointsHard = args["pointsHard"]
+            user = find_by_username(username)
+            if user:
+                user.pointsEasy = int(request.get_json().get("pointsEasy"))
+                user.pointsMedium = int(request.get_json().get("pointsMedium"))
+                user.pointsHard = int(request.get_json().get("pointsHard"))
                 db.session.commit()
+                return user.to_dict(), 201
             else:
                 return {"message": "leaderboard not found"}, 404
         except Exception as e:
@@ -58,16 +62,15 @@ class LeaderboardAPI(Resource):
             return {"message": f"server error: {e}"}, 500
 
     def delete(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("username", required=True, type=str)
-        args = parser.parse_args()
+        username = request.get_json().get("username")
+        print(username, "uid")
 
         try:
-            leaderboard = db.session.query(Leaderboard).get(args["username"])
-            if leaderboard:
-                db.session.delete(leaderboard)
+            user = find_by_username(username)
+            if user:
+                db.session.delete(user)
                 db.session.commit()
-                return leaderboard.to_dict()
+                return user.to_dict()
             else:
                 return {"message": "leaderboard not found"}, 404
         except Exception as e:

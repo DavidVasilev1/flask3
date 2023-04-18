@@ -86,21 +86,15 @@ class Leaderboard(db.Model):
     def __str__(self):
         return json.dumps(self.read())
 
-    # CRUD create/add a new record to the table
-    # returns self or None on error
     def create(self):
         try:
-            # creates a person object from User(db.Model) class, passes initializers
-            # add prepares to persist person object to Users table
             db.session.add(self)
-            db.session.commit()  # SqlAlchemy "unit of work pattern" requires a manual commit
+            db.session.commit()
             return self
         except IntegrityError:
             db.session.remove()
             return None
 
-    # CRUD read converts self to dictionary
-    # returns dictionary
     def read(self):
         return {
             "id": self.id,
@@ -111,8 +105,6 @@ class Leaderboard(db.Model):
             "pointsHard": self.pointsHard
         }
 
-    # CRUD update: updates user name, password, phone
-    # returns self
     def update(self, username="", password="", pointsEasy="", pointsMedium="", pointsHard=""):
         """only updates values with length"""
         if len(username) > 0:
@@ -125,33 +117,17 @@ class Leaderboard(db.Model):
             self.pointsHard = pointsHard
         if len(password) > 0:
             self.set_password(password)
-        db.session.add(self)  # performs update when id exists
+        db.session.add(self)
         db.session.commit()
         return self
 
-    # CRUD delete: remove self
-    # None
     def delete(self):
         db.session.delete(self)
         db.session.commit()
         return None
 
 
-# def init_leaderboards():
-#     username = "bob".strip().lower()
-#     existing_user = Leaderboard.query.filter_by(username=username).first()
-#     print(existing_user)
-#     if existing_user:
-#         return
-#     else:
-#         l1 = Leaderboard(username="bob", password="apple",
-#                          pointsEasy=2, pointsMedium=5, pointsHard=3)
-#         db.session.add(l1)
-#         db.session.commit()
-
-
 def init_leaderboards():
-    # with app.app_context():
     """Create database and tables"""
     db.create_all()
     """Tester data for table"""
@@ -161,8 +137,9 @@ def init_leaderboards():
                      pointsEasy=20, pointsMedium=50, pointsHard=30)
     l3 = Leaderboard(username="bobbert", password="appled",
                      pointsEasy=200, pointsMedium=500, pointsHard=300)
-
-    leaderboards = [l1, l2, l3]
+    l4 = Leaderboard(username="bobruth", password="appler",
+                     pointsEasy=100, pointsMedium=300, pointsHard=500)
+    leaderboards = [l1, l2, l3, l4]
 
     """Builds sample user/note(s) data"""
     for l in leaderboards:
@@ -172,6 +149,6 @@ def init_leaderboards():
             print(f"Created new uid {object.username}")
             db.session.add(l)
             db.session.commit()
-        except:  # error raised if object nit created
+        except:
             '''fails with bad or duplicate data'''
             print(f"Records exist uid {l.username}, or error.")
