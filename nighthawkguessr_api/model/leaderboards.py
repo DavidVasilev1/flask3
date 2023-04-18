@@ -137,8 +137,9 @@ def init_leaderboards():
                      pointsEasy=20, pointsMedium=50, pointsHard=30)
     l3 = Leaderboard(username="bobbert", password="appled",
                      pointsEasy=200, pointsMedium=500, pointsHard=300)
-
-    leaderboards = [l1, l2, l3]
+    l4 = Leaderboard(username="bobruth", password="appler",
+                     pointsEasy=100, pointsMedium=300, pointsHard=500)
+    leaderboards = [l1, l2, l3, l4]
 
     """Builds sample user/note(s) data"""
     for l in leaderboards:
