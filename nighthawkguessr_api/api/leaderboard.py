@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from flask_restful import Api, Resource, reqparse
 from .. import db
-from ..model.leaderboards import Leaderboard
+from .. model.leaderboards import Leaderboard
 
 leaderboard_bp = Blueprint("leaderboards", __name__)
 leaderboard_api = Api(leaderboard_bp)

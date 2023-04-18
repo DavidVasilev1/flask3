@@ -16,9 +16,10 @@ import requests
 import string
 import json 
 import http.cookies as cookies
-from nighthawkguessr_api import app
+# from nighthawkguessr_api import app, db, bcrypt
+from .. import db, bcrypt, app
 
-from model.auth import User, token_required
+from nighthawkguessr_api.model.auth import User, token_required, RegisterForm, LoginForm
 
 
 jwt_api = Blueprint('pass_api', __name__, url_prefix='/api/pass')
@@ -106,16 +107,6 @@ def login():
         # if validation is not succesful it goes back to log in page
         return render_template('login.html', form=form)
     return render_template('login.html', form=form)
-
-
-
-
-
-
-
-
-
-
 
 
 @app.route('/dashboard', methods=['GET', 'POST'])

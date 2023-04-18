@@ -11,7 +11,7 @@ import jwt
 from functools import wraps
 
 import http.cookies as cookies
-from __init__ import db, bcrypt, app
+from .. import db, bcrypt, app
 
 auth = Blueprint('auth', __name__)
 
