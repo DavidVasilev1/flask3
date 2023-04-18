@@ -6,6 +6,9 @@ from ..model.leaderboards import Leaderboard
 leaderboard_bp = Blueprint("leaderboards", __name__)
 leaderboard_api = Api(leaderboard_bp)
 
+def get_user_list():
+    users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard)] for user in Leaderboard.query.all()]
+    return users_list
 
 class LeaderboardAPI(Resource):
     def get(self):
@@ -89,7 +92,38 @@ class LeaderboardListAPI(Resource):
         except Exception as e:
             db.session.rollback()
             return {"message": f"server error: {e}"}, 500
+        
+class LeaderboardTop10(Resource):
+    def partition(self, arr, lo, hi):
+        pivot = arr[hi][1]
+        i = lo - 1
+        for j in range(lo, hi):
+            if arr[j][1] >= pivot:
+                i = i + 1
+                (arr[i], arr[j]) = (arr[j], arr[i])
+        (arr[i + 1], arr[hi]) = (arr[hi], arr[i + 1])
+        return i+1
+    
+    def qSortUserList(self, arr, lo, hi):
+        if lo < hi:
+            part = self.partition(arr, lo, hi)
+            self.qSortUserList(arr, lo, part-1)
+            self.qSortUserList(arr, part+1, hi)
+
+    def get(self):
+        users_list = get_user_list()
+        top10 = {}
+        self.qSortUserList(users_list, 0, len(users_list)-1)
+        for user in users_list:
+            top10[user[0]] = user[1]
+        print(top10)
+        if len(top10) <= 10:
+            return top10
+        return top10[:10]
+        
+
 
 
 leaderboard_api.add_resource(LeaderboardAPI, "/leaderboard")
 leaderboard_api.add_resource(LeaderboardListAPI, "/leaderboardList")
+leaderboard_api.add_resource(LeaderboardTop10, "/leaderboardTop10")
