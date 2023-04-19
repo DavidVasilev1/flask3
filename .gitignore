@@ -142,3 +142,5 @@ cython_debug/
 *.sqlite
 *.sqlite3
 *.db
+
+./passwords.json
