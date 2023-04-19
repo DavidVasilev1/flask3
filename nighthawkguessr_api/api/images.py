@@ -34,7 +34,7 @@ class ImagesAPI:
             if image:
                 image_path = project_path + "/" + image.imagePath
                 with open(image_path, "rb") as image_file:
-                    json_data["bytes"] = str(base64.b64encode(image_file.read()))
+                    json_data["bytes"] = str(base64.b64encode(image_file.read()))[2:][:-1]
                 json_data["xCoord"] = image.xCoord
                 json_data["yCoord"] = image.yCoord
             return jsonify(json_data)
