@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text, LargeBinary
 from sqlalchemy.exc import IntegrityError
-from .. import db
+from nighthawkguessr_api import db
 from pathlib import Path
 
 

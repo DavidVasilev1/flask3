@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean
-from .. import db
+from nighthawkguessr_api import db
 import random
 
 

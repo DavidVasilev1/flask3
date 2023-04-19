@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text
-from .. import db
+from nighthawkguessr_api import db
 from sqlalchemy.exc import IntegrityError
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class Leaderboard(db.Model):
     __tablename__ = "leaderboard"
-
+    __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True)
     _username = Column(String(255), unique=True, nullable=False)
     _password = Column(String(255), nullable=False)

@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
 from nighthawkguessr_api import project_path
-from .. import db
-from ..model.images import Images
+from nighthawkguessr_api import db
+from nighthawkguessr_api.model.todos import Todo
 import os, random
 import base64
 
