@@ -131,13 +131,15 @@ class LeaderboardSecurity(Resource):
         body = request.get_json()
         
         ''' Get Data '''
-        uid = body.get('uid')
-        if uid is None or len(uid) < 1:
+        username = body.get('username')
+        if username is None or len(username) < 1:
             return {'message': f'User ID is missing, or is less than 2 characters'}, 400
         password = body.get('password')
+        print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
+        # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
         
         ''' Find user '''
-        user = Leaderboard.query.filter_by(_uid=uid).first()
+        user = Leaderboard.query.filter_by(_username=username).first()          
         if user is None or not user.is_password(password):
             return {'message': f"Invalid user id or password"}, 400
         

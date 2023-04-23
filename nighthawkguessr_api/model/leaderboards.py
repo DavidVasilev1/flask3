@@ -156,8 +156,8 @@ class Leaderboard(db.Model):
     def read(self):
         return {
             "id": self.id,
-            "username": self.name,
-            "password": self.uid,
+            "username": self.username,
+            "password": self.password,
             "pointsEasy": self.pointsEasy,
             "pointsMedium": self.pointsMedium,
             "pointsHard": self.pointsHard
