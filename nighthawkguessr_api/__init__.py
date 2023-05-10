@@ -2,7 +2,6 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt  # Make sure to import Bcrypt
 from pathlib import Path
 import os
 
@@ -22,7 +21,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "SECRET_KEY"
 db = SQLAlchemy(app)
 Migrate(app, db)
-bcrypt = Bcrypt(app)
 
 # Images storage
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # maximum size of uploaded content

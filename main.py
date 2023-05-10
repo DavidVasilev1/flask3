@@ -1,30 +1,19 @@
-import sys
-from pathlib import Path
-parent_path = Path.cwd()
-sys.path.append(str(parent_path))
-
 from flask_cors import CORS
 from flask import render_template, url_for
-from __init__ import app, db, project_path
-from model.auth import User, token_required
-from api.todo import todo_bp
+from nighthawkguessr_api import app, db, project_path
+from pathlib import Path
+from nighthawkguessr_api.api.todo import todo_bp
 from flask import send_from_directory
-from model.images import initEasyImages
-from api.jwt_routes import jwt_api
+from nighthawkguessr_api.model.images import initEasyImages
 
-app.config['SECRET_KEY'] = 'sdkhjfajkhgfjakhsdflkajndska'
+from nighthawkguessr_api.model.leaderboards import init_leaderboards
+from nighthawkguessr_api.api.leaderboard import leaderboard_bp
+from nighthawkguessr_api.api.images import images_bp
 
-from model.leaderboards import init_leaderboards
-
-from api.leaderboard import leaderboard_bp
-from api.images import images_bp
-from model.auth import auth
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
 app.register_blueprint(images_bp)
-app.register_blueprint(jwt_api)
-
 
 
 @app.before_first_request
