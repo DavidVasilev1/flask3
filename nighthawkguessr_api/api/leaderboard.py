@@ -1,7 +1,7 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
-from .. import db
-from ..model.leaderboards import Leaderboard
+from nighthawkguessr_api import db
+from nighthawkguessr_api.model.leaderboards import Leaderboard
 
 leaderboard_bp = Blueprint("leaderboards", __name__)
 leaderboard_api = Api(leaderboard_bp)
@@ -124,9 +124,30 @@ class LeaderboardTop10(Resource):
             return top10
         return top10[:10]
         
+class LeaderboardSecurity(Resource):
 
+    def post(self):
+        ''' Read data for json body '''
+        body = request.get_json()
+        
+        ''' Get Data '''
+        username = body.get('username')
+        if username is None or len(username) < 1:
+            return {'message': f'User ID is missing, or is less than 2 characters'}, 400
+        password = body.get('password')
+        print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
+        # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
+        
+        ''' Find user '''
+        user = Leaderboard.query.filter_by(_username=username).first()          
+        if user is None or not user.is_password(password):
+            return {'message': f"Invalid user id or password"}, 400
+        
+        ''' authenticated user '''
+        return jsonify(user.read())
 
 
 leaderboard_api.add_resource(LeaderboardAPI, "/leaderboard")
 leaderboard_api.add_resource(LeaderboardListAPI, "/leaderboardList")
 leaderboard_api.add_resource(LeaderboardTop10, "/leaderboardTop10")
+leaderboard_api.add_resource(LeaderboardSecurity, "/authenticate")
