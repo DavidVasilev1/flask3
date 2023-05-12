@@ -3,11 +3,11 @@ from flask_restful import Api, Resource, reqparse
 from nighthawkguessr_api import db
 from nighthawkguessr_api.model.leaderboards import Leaderboard
 
-leaderboard_bp = Blueprint("leaderboards", __name__)
+leaderboard_bp = Blueprint("leaderboards", __name__, url_prefix="/api/leaderboard")
 leaderboard_api = Api(leaderboard_bp)
 
 def get_user_list():
-    users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard)] for user in Leaderboard.query.all()]
+    users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), user._pointsEasy, user._pointsMedium, user._pointsHard] for user in Leaderboard.query.all()]
     return users_list
 
 def find_by_username(username):
@@ -117,8 +117,9 @@ class LeaderboardTop10(Resource):
         users_list = get_user_list()
         top10 = {}
         self.qSortUserList(users_list, 0, len(users_list)-1)
+        print(users_list)
         for user in users_list:
-            top10[user[0]] = user[1]
+            top10[user[0]] = {"total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]}
         print(top10)
         if len(top10) <= 10:
             return top10
