@@ -22,7 +22,6 @@ app.register_blueprint(images_bp)
 app.register_blueprint(jwt_bp)
 app.register_blueprint(pass_api)
 
-
 @app.before_first_request
 def init_db():
     with app.app_context():
