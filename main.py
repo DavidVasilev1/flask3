@@ -1,12 +1,12 @@
 from flask import render_template
 from flask_cors import CORS
+from flask_migrate import Migrate  # New Import
 from flask import render_template, url_for
 from nighthawkguessr_api import app, db, project_path
 from pathlib import Path
 from nighthawkguessr_api.api.todo import todo_bp
 from flask import send_from_directory
 from nighthawkguessr_api.model.images import initEasyImages
-from nighthawkguessr_api.model.user import db
 
 from nighthawkguessr_api.model.leaderboards import init_leaderboards
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
@@ -14,6 +14,7 @@ from nighthawkguessr_api.api.images import images_bp
 from nighthawkguessr_api.api.jwt_auth import jwt_bp
 from nighthawkguessr_api.api.pass_api import pass_api, getPassAPI
 
+migrate = Migrate(app, db)  # New Line
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
