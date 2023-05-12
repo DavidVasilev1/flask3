@@ -72,7 +72,7 @@ class Images(db.Model):
             db.session.remove()
             return None
 
-    # CRUD read converts self to dictionary
+    # CRUD read converts self to dictionaries
     # returns dictionary
     def read(self):
         return {
@@ -108,8 +108,8 @@ class Images(db.Model):
 
 def initEasyImages():
     
-    image_dir = Path.cwd()/"images/easy"
-    images_paths = [i.name for i in image_dir.iterdir()]
+    image_dir = Path.cwd()/"images/easy" # image directory of easy images
+    images_paths = [i.name for i in image_dir.iterdir()] # retrieves path of images
     images = [Images("images/easy/" + image, 250, 250, 0) for image in images_paths]
     for image in images:
         try:
