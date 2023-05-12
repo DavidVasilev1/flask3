@@ -5,6 +5,7 @@ import jwt
 from nighthawkguessr_api.model.user import User
 from http import cookies
 import bcrypt
+from bcrypt import gensalt
 from nighthawkguessr_api.forms import RegisterForm, LoginForm
 from nighthawkguessr_api.model.user import db
 from flask import current_app
@@ -42,45 +43,42 @@ def token_required(f):
        # returns the decorator
    return decorator
 
-@jwt_bp.route('/register', methods=['GET', 'POST'])
+from flask import request
+@jwt_bp.route('/register', methods=['POST'])
 def register():
-   form = RegisterForm()
-   if form.validate_on_submit():
-       hashed_password = bcrypt.generate_password_hash(form.password.data)
-       new_user = User(username=form.username.data, password=hashed_password)
-       db.session.add(new_user)
-       db.session.commit()
-       return redirect(url_for('login'))
+    data = request.get_json()
+
+    if not data or not data.get('username') or not data.get('password'):
+        return jsonify({'message': 'Username or password field is empty.'}), 400
+
+    user = User.query.filter_by(username=data.get('username')).first()
+
+    if user:
+        return jsonify({'message': 'User already exists. Please Log in.'}), 400
+
+    hashed_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')  # ensure the hashed password is in string format
+
+    new_user = User(username=data.get('username'), password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'message': 'New user created!'}), 201
 
 
-   return render_template('register.html', form=form)
-
-@jwt_bp.route('/login', methods=['GET', 'POST'])
+@jwt_bp.route('/login', methods=['POST'])
 def login():
-    # loads login form
-    form = LoginForm()
-    # when user submits information it creates a token (this is where a token is created and stored in a cookie)
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user:
-            # checks the user entered password against the database stored password
-            if bcrypt.check_password_hash(user.password, form.password.data):
-                # This is were token is created . Takes the payload with username and encodes using the secret key and algorithm(HS256).
-                token = jwt.encode(payload= {'name': user.username}, key=current_app.config['SECRET_KEY'], algorithm="HS256")
-                # calls for dashboad url
-                response = make_response(redirect(url_for('dashboard')))
-                # sets the token in a cookie
-                response.set_cookie('token', token) 
-                # return response back to client 
-                return response
-        # if validation is not succesful it goes back to log in page
-        return render_template('login.html', form=form)
-    return render_template('login.html', form=form)
+    data = request.get_json()
+    user = User.query.filter_by(username=data.get('username')).first()
+    if user and bcrypt.checkpw(data.get('password').encode('utf-8'), user.password.encode('utf-8')):
+        token = jwt.encode(payload= {'name': user.username}, key=current_app.config['SECRET_KEY'], algorithm="HS256")
+        return jsonify({'token': token}), 200  # 200 is a typical HTTP status code for a successful request
+    return jsonify({'message': 'Invalid username or password'}), 401  # 401 is a typical HTTP status code for unauthorized access
+
 
 @jwt_bp.route('/dashboard', methods=['GET', 'POST'])
 @token_required
 def dashboard(temp):
-    return render_template('dashboard.html')
+    return render_template('index.html')
 # This redirects to dashboard page ones loged in, and log in succesful is required.
 
 @jwt_bp.route('/logout', methods=['GET', 'POST'])
