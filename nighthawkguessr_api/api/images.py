@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
+from math import sqrt, exp, floor
 from nighthawkguessr_api import project_path
 from .. import db
 from ..model.images import Images
@@ -63,4 +64,17 @@ class ImagesAPI:
                 json_data["yCoord"] = image.yCoord
             return jsonify(json_data)
         
+    class _CalculatePoints(Resource):
+        def get(self):
+            userXCoord = int(request.get_json().get("userXCoord"))
+            userYCoord = int(request.get_json().get("userYCoord"))
+            XCoord = int(request.get_json().get("XCoord"))
+            YCoord = int(request.get_json().get("YCoord"))
+            distance = sqrt((XCoord-userXCoord)**2 + (YCoord-userYCoord)**2)
+            points = int(floor(5314.0934613321*exp(distance)-314.093461332))
+            if points >= 0:
+                return points
+            return 0
+
     images_api.add_resource(_EasyImages, '/GetEasyImage')
+    images_api.add_resource(_CalculatePoints, '/CalculatePoints')

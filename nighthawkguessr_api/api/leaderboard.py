@@ -103,8 +103,8 @@ class LeaderboardTop10(Resource):
         for j in range(lo, hi):
             if arr[j][1] >= pivot:
                 i = i + 1
-                (arr[i], arr[j]) = (arr[j], arr[i])
-        (arr[i + 1], arr[hi]) = (arr[hi], arr[i + 1])
+                arr[i], arr[j] = arr[j], arr[i]
+        arr[i + 1], arr[hi] = arr[hi], arr[i + 1]
         return i+1
     
     def qSortUserList(self, arr, lo, hi):
