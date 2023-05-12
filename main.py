@@ -1,3 +1,4 @@
+from flask import render_template
 from flask_cors import CORS
 from flask import render_template, url_for
 from nighthawkguessr_api import app, db, project_path
@@ -5,14 +6,20 @@ from pathlib import Path
 from nighthawkguessr_api.api.todo import todo_bp
 from flask import send_from_directory
 from nighthawkguessr_api.model.images import initEasyImages
+from nighthawkguessr_api.model.user import db
 
 from nighthawkguessr_api.model.leaderboards import init_leaderboards
-
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
+from nighthawkguessr_api.api.images import images_bp
+from nighthawkguessr_api.api.jwt_auth import jwt_bp
+from nighthawkguessr_api.api.pass_api import pass_api, getPassAPI
 
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
+app.register_blueprint(images_bp)
+app.register_blueprint(jwt_bp)
+app.register_blueprint(pass_api)
 
 
 @app.before_first_request
@@ -21,7 +28,6 @@ def init_db():
         db.create_all()
         initEasyImages()
         init_leaderboards()
-
 
 @app.route('/')
 def index():
@@ -51,6 +57,6 @@ def send_report(path):
 
 
 if __name__ == "__main__":
-    cors = CORS(app)
+    cors = CORS(app, resources={r"*": {"origins": "*"}})
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"
     app.run(debug=True, host="0.0.0.0", port="8200")

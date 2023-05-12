@@ -1,21 +1,28 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
-from .. import db
-from ..model.leaderboards import Leaderboard
+from nighthawkguessr_api import db
+from nighthawkguessr_api.model.leaderboards import Leaderboard
 
 leaderboard_bp = Blueprint("leaderboards", __name__)
 leaderboard_api = Api(leaderboard_bp)
 
+def get_user_list():
+    users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard)] for user in Leaderboard.query.all()]
+    return users_list
+
+def find_by_username(username):
+    users = Leaderboard.query.filter_by(_username=username).all()
+    return users[0]
+
 
 class LeaderboardAPI(Resource):
     def get(self):
-        username = request.args.get("id")
+        username = request.get_json().get("username")
         print(username, "uid")
-        leaderboard = db.session.query(Leaderboard).get(username)
-        print(leaderboard, "?")
-        if leaderboard:
-            return leaderboard.to_dict()
-        return {"message": leaderboard}, 404
+        user = find_by_username(username)
+        if user:
+            return user.to_dict()
+        return {"message": user}, 404
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -37,17 +44,17 @@ class LeaderboardAPI(Resource):
             return {"message": f"server error: {e}"}, 500
 
     def put(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("username", required=True, type=str)
-        args = parser.parse_args()
+        username = request.get_json().get("username")
+        print(username, "uid")
 
         try:
-            leaderboard = db.session.query(Leaderboard).get(args["username"])
-            if leaderboard:
-                leaderboard.pointsEasy = args["pointsEasy"]
-                leaderboard.pointsMedium = args["pointsMedium"]
-                leaderboard.pointsHard = args["pointsHard"]
+            user = find_by_username(username)
+            if user:
+                user.pointsEasy = int(request.get_json().get("pointsEasy"))
+                user.pointsMedium = int(request.get_json().get("pointsMedium"))
+                user.pointsHard = int(request.get_json().get("pointsHard"))
                 db.session.commit()
+                return user.to_dict(), 201
             else:
                 return {"message": "leaderboard not found"}, 404
         except Exception as e:
@@ -55,16 +62,15 @@ class LeaderboardAPI(Resource):
             return {"message": f"server error: {e}"}, 500
 
     def delete(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("username", required=True, type=str)
-        args = parser.parse_args()
+        username = request.get_json().get("username")
+        print(username, "uid")
 
         try:
-            leaderboard = db.session.query(Leaderboard).get(args["username"])
-            if leaderboard:
-                db.session.delete(leaderboard)
+            user = find_by_username(username)
+            if user:
+                db.session.delete(user)
                 db.session.commit()
-                return leaderboard.to_dict()
+                return user.to_dict()
             else:
                 return {"message": "leaderboard not found"}, 404
         except Exception as e:
@@ -89,7 +95,59 @@ class LeaderboardListAPI(Resource):
         except Exception as e:
             db.session.rollback()
             return {"message": f"server error: {e}"}, 500
+        
+class LeaderboardTop10(Resource):
+    def partition(self, arr, lo, hi):
+        pivot = arr[hi][1]
+        i = lo - 1
+        for j in range(lo, hi):
+            if arr[j][1] >= pivot:
+                i = i + 1
+                (arr[i], arr[j]) = (arr[j], arr[i])
+        (arr[i + 1], arr[hi]) = (arr[hi], arr[i + 1])
+        return i+1
+    
+    def qSortUserList(self, arr, lo, hi):
+        if lo < hi:
+            part = self.partition(arr, lo, hi)
+            self.qSortUserList(arr, lo, part-1)
+            self.qSortUserList(arr, part+1, hi)
+
+    def get(self):
+        users_list = get_user_list()
+        top10 = {}
+        self.qSortUserList(users_list, 0, len(users_list)-1)
+        for user in users_list:
+            top10[user[0]] = user[1]
+        print(top10)
+        if len(top10) <= 10:
+            return top10
+        return top10[:10]
+        
+class LeaderboardSecurity(Resource):
+
+    def post(self):
+        ''' Read data for json body '''
+        body = request.get_json()
+        
+        ''' Get Data '''
+        username = body.get('username')
+        if username is None or len(username) < 1:
+            return {'message': f'User ID is missing, or is less than 2 characters'}, 400
+        password = body.get('password')
+        print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
+        # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
+        
+        ''' Find user '''
+        user = Leaderboard.query.filter_by(_username=username).first()          
+        if user is None or not user.is_password(password):
+            return {'message': f"Invalid user id or password"}, 400
+        
+        ''' authenticated user '''
+        return jsonify(user.read())
 
 
 leaderboard_api.add_resource(LeaderboardAPI, "/leaderboard")
 leaderboard_api.add_resource(LeaderboardListAPI, "/leaderboardList")
+leaderboard_api.add_resource(LeaderboardTop10, "/leaderboardTop10")
+leaderboard_api.add_resource(LeaderboardSecurity, "/authenticate")
