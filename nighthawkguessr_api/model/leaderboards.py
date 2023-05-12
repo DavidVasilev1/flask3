@@ -192,7 +192,7 @@ class Leaderboard(db.Model):
     #            
 def init_leaderboards():
     """Create database and tables"""
-    db.create_all()
+    # db.create_all()
     """Tester data for table"""
     l1 = Leaderboard(username="bob", password="apple",
                      pointsEasy=2, pointsMedium=5, pointsHard=3)
