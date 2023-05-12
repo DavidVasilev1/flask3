@@ -115,11 +115,11 @@ class LeaderboardTop10(Resource):
 
     def get(self):
         users_list = get_user_list()
-        top10 = {}
+        top10 = []
         self.qSortUserList(users_list, 0, len(users_list)-1)
         print(users_list)
         for user in users_list:
-            top10[user[0]] = {"total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]}
+            top10.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
         print(top10)
         if len(top10) <= 10:
             return top10
