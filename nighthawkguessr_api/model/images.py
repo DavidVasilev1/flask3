@@ -72,7 +72,7 @@ class Images(db.Model):
             db.session.remove()
             return None
 
-    # CRUD read converts self to dictionary
+    # CRUD read converts self to dictionaries
     # returns dictionary
     def read(self):
         return {
