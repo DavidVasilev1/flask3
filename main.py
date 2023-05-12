@@ -1,31 +1,27 @@
-import sys
-from pathlib import Path
-parent_path = Path.cwd()
-sys.path.append(str(parent_path))
-
+from flask import render_template
 from flask_cors import CORS
+from flask_migrate import Migrate  # New Import
 from flask import render_template, url_for
-from nighthawkguessr_api.__init__ import app, db, project_path
-#from nighthawkguessr_api import app, db, project_path
+from nighthawkguessr_api import app, db, project_path
+from pathlib import Path
 from nighthawkguessr_api.api.todo import todo_bp
 from flask import send_from_directory
-
-# app.config['SECRET_KEY'] = 'sdkhjfajkhgfjakhsdflkajndska'
+from nighthawkguessr_api.model.images import initEasyImages
 
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
 from nighthawkguessr_api.model.leaderboards import init_leaderboards
-
+from nighthawkguessr_api.api.leaderboard import leaderboard_bp
 from nighthawkguessr_api.api.images import images_bp
-from nighthawkguessr_api.model.images import initEasyImages
+from nighthawkguessr_api.api.jwt_auth import jwt_bp
+from nighthawkguessr_api.api.pass_api import pass_api, getPassAPI
 
-from nighthawkguessr_api.api.jwt_routes import jwt_api
-from nighthawkguessr_api.model.auth import User, token_required, auth
+migrate = Migrate(app, db)  # New Line
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
 app.register_blueprint(images_bp)
-#app.register_blueprint(jwt_api)
-
+app.register_blueprint(jwt_bp)
+app.register_blueprint(pass_api)
 
 @app.before_first_request
 def init_db():
