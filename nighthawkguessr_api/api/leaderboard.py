@@ -124,7 +124,8 @@ class LeaderboardTop10(Resource):
         if len(top10) <= 10:
             return top10
         return top10[:10]
-        
+
+# Leaderboard Security provides Authentication mechanism    
 class LeaderboardSecurity(Resource):
 
     def post(self):
@@ -147,6 +148,7 @@ class LeaderboardSecurity(Resource):
         ''' authenticated user '''
         return jsonify(user.read())
 
+# Leaderboard APIs
 
 leaderboard_api.add_resource(LeaderboardAPI, "/leaderboard")
 leaderboard_api.add_resource(LeaderboardListAPI, "/leaderboardList")
