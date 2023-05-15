@@ -125,32 +125,8 @@ class StatsChart(Resource):
             return top10
         return top10[:10]
 
-# Leaderboard Security provides Authentication mechanism    
-class StatsSecurity(Resource):
-
-    def post(self):
-        ''' Read data for json body '''
-        body = request.get_json()
-        
-        ''' Get Data '''
-        username = body.get('username')
-        if username is None or len(username) < 1:
-            return {'message': f'User ID is missing, or is less than 2 characters'}, 400
-        password = body.get('password')
-        # print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
-        # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
-        
-        ''' Find user '''
-        user = Leaderboard.query.filter_by(_username=username).first()          
-        if user is None or not user.is_password(password):
-            return {'message': f"Invalid user id or password"}, 400
-        
-        ''' authenticated user '''
-        return jsonify(user.read())
-
 # Stats APIs
 
-stats_api.add_resource(StatsAPI, "/stats")
-stats_api.add_resource(StatsListAPI, "/StatsList")
+stats_api.add_resource(StatsAPI, "/Stats")
+stats_api.add_resource(StatsList, "/StatsList")
 stats_api.add_resource(StatsChart, "/StatsChart")
-stats_api.add_resource(StatsSecurity, "/authenticate")
