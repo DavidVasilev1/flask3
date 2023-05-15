@@ -137,7 +137,7 @@ class LeaderboardSecurity(Resource):
         if username is None or len(username) < 1:
             return {'message': f'User ID is missing, or is less than 2 characters'}, 400
         password = body.get('password')
-        print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
+        # print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
         # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
         
         ''' Find user '''
