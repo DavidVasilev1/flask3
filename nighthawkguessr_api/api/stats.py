@@ -127,6 +127,6 @@ class StatsChart(Resource):
 
 # Stats APIs
 
-stats_api.add_resource(StatsAPI, "/Stats")
-stats_api.add_resource(StatsList, "/StatsList")
-stats_api.add_resource(StatsChart, "/StatsChart")
+stats_api.add_resource(StatsAPI, "/stats")
+stats_api.add_resource(StatsList, "/statslist")
+stats_api.add_resource(StatsChart, "/statschart")
