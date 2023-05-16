@@ -14,7 +14,7 @@ def find_by_username(username):
     users = Leaderboard.query.filter_by(_username=username).all()
     return users[0]
 
-
+# API to handle data for Stats
 class StatsAPI(Resource):
     def get(self):
         username = request.get_json().get("username")
@@ -77,7 +77,7 @@ class StatsAPI(Resource):
             db.session.rollback()
             return {"message": f"server error: {e}"}, 500
 
-
+# API to handle List data for Stats
 class StatsList(Resource):
     def get(self):
         try:
@@ -95,7 +95,8 @@ class StatsList(Resource):
         except Exception as e:
             db.session.rollback()
             return {"message": f"server error: {e}"}, 500
-        
+
+# API to handle charts data for Stats        
 class StatsChart(Resource):
     def partition(self, arr, lo, hi):
         pivot = arr[hi][1]
@@ -130,3 +131,4 @@ class StatsChart(Resource):
 stats_api.add_resource(StatsAPI, "/stats")
 stats_api.add_resource(StatsList, "/statslist")
 stats_api.add_resource(StatsChart, "/statschart")
+# stats_api.add_resource(StatsChart, "/statspie")
