@@ -6,9 +6,21 @@ from nighthawkguessr_api.model.leaderboards import Leaderboard
 leaderboard_bp = Blueprint("leaderboards", __name__, url_prefix="/api/leaderboard")
 leaderboard_api = Api(leaderboard_bp)
 
-def get_user_list():
-    users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), user._pointsEasy, user._pointsMedium, user._pointsHard] for user in Leaderboard.query.all()]
-    return users_list
+def get_total_user_list():
+    total_users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), int(user._pointsEasy), 2*int(user._pointsMedium), 3*int(user._pointsHard)] for user in Leaderboard.query.all()]
+    return total_users_list
+
+def get_easy_user_list():
+    easy_users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), int(user._pointsEasy), 2*int(user._pointsMedium), 3*int(user._pointsHard)] for user in Leaderboard.query.all()]
+    return easy_users_list
+
+def get_medium_user_list():
+    medium_users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), int(user._pointsEasy), 2*int(user._pointsMedium), 3*int(user._pointsHard)] for user in Leaderboard.query.all()]
+    return medium_users_list
+
+def get_hard_user_list():
+    hard_users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), user._pointsEasy, user._pointsMedium, user._pointsHard] for user in Leaderboard.query.all()]
+    return hard_users_list
 
 def find_by_username(username):
     users = Leaderboard.query.filter_by(_username=username).all()
@@ -114,16 +126,16 @@ class LeaderboardTop10(Resource):
             self.qSortUserList(arr, part+1, hi)
 
     def get(self):
-        users_list = get_user_list()
-        top10 = []
-        self.qSortUserList(users_list, 0, len(users_list)-1)
-        print(users_list)
-        for user in users_list:
-            top10.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
-        print(top10)
-        if len(top10) <= 10:
-            return top10
-        return top10[:10]
+        total_users_list = get_total_user_list()
+        top10total = []
+        self.qSortUserList(total_users_list, 0, len(total_users_list)-1)
+        print(total_users_list)
+        for user in total_users_list:
+            top10total.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
+        print(top10total)
+        if len(top10total) <= 10:
+            return top10total
+        return top10total[:10]
 
 # Leaderboard Security provides Authentication mechanism    
 class LeaderboardSecurity(Resource):
