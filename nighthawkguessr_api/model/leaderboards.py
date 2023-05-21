@@ -195,13 +195,13 @@ def init_leaderboards():
     # db.create_all()
     """Tester data for table"""
     l1 = Leaderboard(username="bob", password="apple",
-                     pointsEasy=2, pointsMedium=5, pointsHard=3)
+                     pointsEasy=300, pointsMedium=200, pointsHard=400)
     l2 = Leaderboard(username="bobby", password="appley",
-                     pointsEasy=20, pointsMedium=50, pointsHard=30)
+                     pointsEasy=200, pointsMedium=400, pointsHard=10)
     l3 = Leaderboard(username="bobbert", password="appled",
-                     pointsEasy=200, pointsMedium=500, pointsHard=300)
+                     pointsEasy=400, pointsMedium=100, pointsHard=200)
     l4 = Leaderboard(username="bobruth", password="appler",
-                     pointsEasy=100, pointsMedium=300, pointsHard=500)
+                     pointsEasy=100, pointsMedium=300, pointsHard=200)
     leaderboards = [l1, l2, l3, l4]
 
     """Builds sample user/note(s) data"""

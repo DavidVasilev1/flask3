@@ -19,7 +19,7 @@ def get_medium_user_list():
     return medium_users_list
 
 def get_hard_user_list():
-    hard_users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), user._pointsEasy, user._pointsMedium, user._pointsHard] for user in Leaderboard.query.all()]
+    hard_users_list = [[user._username, int(user._pointsEasy)+2*int(user._pointsMedium)+3*int(user._pointsHard), int(user._pointsEasy), 2*int(user._pointsMedium), 3*int(user._pointsHard)] for user in Leaderboard.query.all()]
     return hard_users_list
 
 def find_by_username(username):
@@ -109,34 +109,73 @@ class LeaderboardListAPI(Resource):
             return {"message": f"server error: {e}"}, 500
         
 class LeaderboardTop10(Resource):
-    def partition(self, arr, lo, hi):
-        pivot = arr[hi][1]
+    def partition(self, arr, lo, hi,level):
+        pivot = arr[hi][level]
         i = lo - 1
         for j in range(lo, hi):
-            if arr[j][1] >= pivot:
+            if arr[j][level] >= pivot:
                 i = i + 1
                 arr[i], arr[j] = arr[j], arr[i]
         arr[i + 1], arr[hi] = arr[hi], arr[i + 1]
         return i+1
     
-    def qSortUserList(self, arr, lo, hi):
+    def qSortUserList(self, arr, lo, hi,level):
         if lo < hi:
-            part = self.partition(arr, lo, hi)
-            self.qSortUserList(arr, lo, part-1)
-            self.qSortUserList(arr, part+1, hi)
+            part = self.partition(arr, lo, hi,level)
+            self.qSortUserList(arr, lo, part-1,level)
+            self.qSortUserList(arr, part+1, hi,level)
 
     def get(self):
+        top10all = []
         total_users_list = get_total_user_list()
         top10total = []
-        self.qSortUserList(total_users_list, 0, len(total_users_list)-1)
+        self.qSortUserList(total_users_list, 0, len(total_users_list)-1,1)
         print(total_users_list)
         for user in total_users_list:
             top10total.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
         print(top10total)
         if len(top10total) <= 10:
-            return top10total
-        return top10total[:10]
-
+            top10all.append(top10total)
+        else:
+            top10all.append(top10total[:10])
+    
+        easy_users_list = get_easy_user_list()
+        top10easy = []
+        self.qSortUserList(easy_users_list, 0, len(easy_users_list)-1,2)
+        print(easy_users_list)
+        for user in easy_users_list:
+            top10easy.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
+        print(top10easy)
+        if len(top10easy) <= 10:
+            top10all.append(top10easy)
+        else:
+            top10all.append(top10easy[:10])
+    
+        medium_users_list = get_medium_user_list()
+        top10medium = []
+        self.qSortUserList(medium_users_list, 0, len(medium_users_list)-1,3)
+        print(medium_users_list)
+        for user in medium_users_list:
+            top10medium.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
+        print(top10medium)
+        if len(top10medium) <= 10:
+            top10all.append(top10medium)
+        else:
+            top10all.append(top10medium[:10])
+    
+        hard_users_list = get_hard_user_list()
+        top10hard = []
+        self.qSortUserList(hard_users_list, 0, len(hard_users_list)-1,4)
+        print(hard_users_list)
+        for user in hard_users_list:
+            top10hard.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
+        print(top10hard)
+        if len(top10hard) <= 10:
+            top10all.append(top10hard)
+        else:
+            top10all.append(top10hard[:10])
+        
+        return top10all
 # Leaderboard Security provides Authentication mechanism    
 class LeaderboardSecurity(Resource):
 
