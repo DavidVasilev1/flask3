@@ -135,8 +135,10 @@ class LeaderboardTop10(Resource):
             top10total.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
         print(top10total)
         if len(top10total) <= 10:
+            return top10total
             top10all.append(top10total)
         else:
+            return top10total[:10]
             top10all.append(top10total[:10])
     
         easy_users_list = get_easy_user_list()
