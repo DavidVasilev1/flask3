@@ -195,14 +195,30 @@ def init_leaderboards():
     # db.create_all()
     """Tester data for table"""
     l1 = Leaderboard(username="bob", password="apple",
-                     pointsEasy=2, pointsMedium=5, pointsHard=3)
+                     pointsEasy=100, pointsMedium=700, pointsHard=1200)
     l2 = Leaderboard(username="bobby", password="appley",
-                     pointsEasy=20, pointsMedium=50, pointsHard=30)
+                     pointsEasy=200, pointsMedium=800, pointsHard=1100)
     l3 = Leaderboard(username="bobbert", password="appled",
-                     pointsEasy=200, pointsMedium=500, pointsHard=300)
+                     pointsEasy=300, pointsMedium=900, pointsHard=1000)
     l4 = Leaderboard(username="bobruth", password="appler",
-                     pointsEasy=100, pointsMedium=300, pointsHard=500)
-    leaderboards = [l1, l2, l3, l4]
+                     pointsEasy=400, pointsMedium=1000, pointsHard=900)
+    l5 = Leaderboard(username="joe", password="pear",
+                     pointsEasy=500, pointsMedium=1100, pointsHard=800)
+    l6 = Leaderboard(username="jo", password="peary",
+                     pointsEasy=600, pointsMedium=1200, pointsHard=700)
+    l7 = Leaderboard(username="john", password="peared",
+                     pointsEasy=700, pointsMedium=100, pointsHard=600)
+    l8 = Leaderboard(username="jon", password="peary",
+                     pointsEasy=800, pointsMedium=200, pointsHard=500)
+    l9 = Leaderboard(username="jonny", password="pears",
+                     pointsEasy=900, pointsMedium=300, pointsHard=400)
+    l10 = Leaderboard(username="johny", password="pearr",
+                     pointsEasy=1000, pointsMedium=400, pointsHard=300)
+    l11 = Leaderboard(username="johnathan", password="peer",
+                     pointsEasy=1100, pointsMedium=500, pointsHard=200)
+    l12 = Leaderboard(username="jean", password="pair",
+                     pointsEasy=1200, pointsMedium=600, pointsHard=100)
+    leaderboards = [l1, l2, l3, l4,l5,l6,l7,l8,l9,l10,l11,l12]
 
     """Builds sample user/note(s) data"""
     for l in leaderboards:
