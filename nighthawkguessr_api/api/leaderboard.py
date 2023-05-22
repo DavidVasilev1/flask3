@@ -123,7 +123,8 @@ class LeaderboardTop10(Resource):
         print(top10)
         if len(top10) <= 10:
             return top10
-        return top10[:10]
+        return top10
+        # return top10[:10]
 
 # Leaderboard Security provides Authentication mechanism    
 class LeaderboardSecurity(Resource):
