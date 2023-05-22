@@ -126,7 +126,7 @@ class LeaderboardTop10(Resource):
             self.qSortUserList(arr, part+1, hi,level)
 
     def get(self):
-        top10all = []
+        top10all = {}
         total_users_list = get_total_user_list()
         top10total = []
         self.qSortUserList(total_users_list, 0, len(total_users_list)-1,1)
@@ -135,11 +135,11 @@ class LeaderboardTop10(Resource):
             top10total.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
         print(top10total)
         if len(top10total) <= 10:
-            return top10total
-            top10all.append(top10total)
+            # return top10total
+            top10all["TotalSort"]=(top10total)
         else:
-            return top10total[:10]
-            top10all.append(top10total[:10])
+            # return top10total[:10]
+            top10all["TotalSort"]=(top10total[:10])
     
         easy_users_list = get_easy_user_list()
         top10easy = []
@@ -149,9 +149,9 @@ class LeaderboardTop10(Resource):
             top10easy.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
         print(top10easy)
         if len(top10easy) <= 10:
-            top10all.append(top10easy)
+            top10all["EasySort"]=(top10easy)
         else:
-            top10all.append(top10easy[:10])
+            top10all["EasySort"]=(top10easy[:10])
     
         medium_users_list = get_medium_user_list()
         top10medium = []
@@ -161,9 +161,9 @@ class LeaderboardTop10(Resource):
             top10medium.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
         print(top10medium)
         if len(top10medium) <= 10:
-            top10all.append(top10medium)
+            top10all["MediumSort"]=(top10medium)
         else:
-            top10all.append(top10medium[:10])
+            top10all["MediumSort"]=(top10medium[:10])
     
         hard_users_list = get_hard_user_list()
         top10hard = []
@@ -173,9 +173,9 @@ class LeaderboardTop10(Resource):
             top10hard.append({"username": user[0], "total": user[1], "Easy":user[2], "Medium":user[3], "Hard":user[4]})
         print(top10hard)
         if len(top10hard) <= 10:
-            top10all.append(top10hard)
+            top10all["HardSort"]=(top10hard)
         else:
-            top10all.append(top10hard[:10])
+            top10all["HardSort"]=(top10hard[:10])
         
         return top10all
 # Leaderboard Security provides Authentication mechanism    
