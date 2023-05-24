@@ -106,11 +106,15 @@ class Images(db.Model):
         return None
 
 
-def initEasyImages():
-    
-    image_dir = Path.cwd()/"images/easy" # image directory of easy images
-    images_paths = [i.name for i in image_dir.iterdir()] # retrieves path of images
-    images = [Images("images/easy/" + image, 250, 250, 0) for image in images_paths]
+def initEasyImages(): 
+    image_dir = Path.cwd()/"images/easy"
+    images_paths = [i.name for i in image_dir.iterdir()]
+    images = []
+    for image in images_paths:
+        print(image)
+        xCoord = int(input("Enter X-Coordinate"))
+        yCoord = int(input("Enter Y-Coordinate"))
+        images.append(Images("images/easy/" + image, xCoord, yCoord, 0))
     for image in images:
         try:
             image.create()
