@@ -9,7 +9,10 @@ import os, random
 import base64
 
 
- 
+MAX_DIST = 565.685424949
+COEFFICIENT_A = 7909.88353435
+COEFFICIENT_B = 2909.88353435
+
 images_bp = Blueprint("images", __name__, url_prefix='/api/images')
 images_api = Api(images_bp)
 
@@ -66,13 +69,14 @@ class ImagesAPI:
             return jsonify(json_data)
         
     class _CalculatePoints(Resource):
-        def get(self):
+        def post(self):
             userXCoord = int(request.get_json().get("userXCoord"))
             userYCoord = int(request.get_json().get("userYCoord"))
             XCoord = int(request.get_json().get("XCoord"))
             YCoord = int(request.get_json().get("YCoord"))
             distance = sqrt((XCoord-userXCoord)**2 + (YCoord-userYCoord)**2)
-            points = int(floor(5314.0934613321*exp(distance)-314.093461332))
+            points = int(floor(COEFFICIENT_A*exp((-1)*(distance/MAX_DIST))-COEFFICIENT_B))
+            print(points)
             if points >= 0:
                 return points
             return 0
