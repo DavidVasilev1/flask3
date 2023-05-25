@@ -106,20 +106,20 @@ class Images(db.Model):
         return None
 
 
-def initEasyImages(): 
-    image_dir = Path.cwd()/"images/easy"
-    images_paths = [i.name for i in image_dir.iterdir()]
-    images = []
-    for image in images_paths:
-        print(image)
-        xCoord = int(input("Enter X-Coordinate"))
-        yCoord = int(input("Enter Y-Coordinate"))
-        images.append(Images("images/easy/" + image, xCoord, yCoord, 0))
-    for image in images:
-        try:
-            image.create()
-            print("Successfully added entry")
-        except:
-            db.session.remove()
-            print("Error adding image: ", image.imagePath)
+# def initEasyImages(): 
+#     image_dir = Path.cwd()/"images/easy"
+#     images_paths = [i.name for i in image_dir.iterdir()]
+#     images = []
+#     for image in images_paths:
+#         print(image)
+#         xCoord = int(input("Enter X-Coordinate"))
+#         yCoord = int(input("Enter Y-Coordinate"))
+#         images.append(Images("images/easy/" + image, xCoord, yCoord, 0))
+#     for image in images:
+#         try:
+#             image.create()
+#             print("Successfully added entry")
+#         except:
+#             db.session.remove()
+#             print("Error adding image: ", image.imagePath)
     
