@@ -27,7 +27,7 @@ app.register_blueprint(pass_api)
 def init_db():
     with app.app_context():
         db.create_all()
-        initEasyImages()
+        # initEasyImages()
         init_leaderboards()
 
 @app.route('/')
