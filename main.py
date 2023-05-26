@@ -60,4 +60,4 @@ def send_report(path):
 if __name__ == "__main__":
     cors = CORS(app, resources={r"*": {"origins": "*"}})
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"
-    app.run(debug=True, host="0.0.0.0", port="8200")
+    app.run(debug=True, host="0.0.0.0", port="1337")
