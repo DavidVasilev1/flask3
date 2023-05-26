@@ -8,3 +8,4 @@ Flask_Migrate==4.0.1
 Flask_Restful==0.3.9
 Flask_Cors==3.0.10
 bcrypt==4.0.1
+flask_wtf==1.1.1
