@@ -11,6 +11,7 @@ from flask import send_from_directory
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
 from nighthawkguessr_api.model.leaderboards import init_leaderboards
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
+from nighthawkguessr_api.api.stats import stats_bp
 from nighthawkguessr_api.api.images import images_bp
 from nighthawkguessr_api.api.jwt_auth import jwt_bp
 from nighthawkguessr_api.api.pass_api import pass_api, getPassAPI
@@ -19,6 +20,7 @@ migrate = Migrate(app, db)  # New Line
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
+app.register_blueprint(stats_bp)
 app.register_blueprint(images_bp)
 app.register_blueprint(jwt_bp)
 app.register_blueprint(pass_api)
