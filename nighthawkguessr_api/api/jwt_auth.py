@@ -10,32 +10,6 @@ import jwt
 
 jwt_bp = Blueprint('jwt_auth', __name__)
 
-def token_required(f):
-    @wraps(f)
-    def decorator(*args, **kwargs):
-        token = None
-        cookieString = request.headers.get('Cookie')
-
-        if cookieString:
-            cookie = cookies.SimpleCookie()
-            cookie.load(cookieString)
-
-            if 'token' in cookie:
-                token = cookie['token'].value
-
-        if not token:
-            return jsonify({'message': 'a valid token is missing'})
-
-        try:
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = User.query.filter_by(username=data['name']).first()
-        except:
-            return jsonify({'message': 'token is invalid'})
-
-        return f(current_user, *args, **kwargs)
-
-    return decorator
-
 
 @jwt_bp.route('/register', methods=['POST'])
 def register():
