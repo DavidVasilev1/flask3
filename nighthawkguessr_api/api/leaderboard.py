@@ -39,13 +39,12 @@ class LeaderboardAPI(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("username", required=True, type=str)
-        parser.add_argument("password", required=True, type=str)
         parser.add_argument("pointsEasy", required=True, type=int)
         parser.add_argument("pointsMedium", required=True, type=int)
         parser.add_argument("pointsHard", required=True, type=int)
         args = parser.parse_args()
 
-        leaderboard = Leaderboard(args["username"], args["password"],
+        leaderboard = Leaderboard(args["username"],
                                   args["pointsEasy"], args["pointsMedium"], args["pointsHard"])
         try:
             db.session.add(leaderboard)
@@ -189,14 +188,9 @@ class LeaderboardSecurity(Resource):
         username = body.get('username')
         if username is None or len(username) < 1:
             return {'message': f'User ID is missing, or is less than 2 characters'}, 400
-        password = body.get('password')
-        # print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
-        # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
         
         ''' Find user '''
         user = Leaderboard.query.filter_by(_username=username).first()          
-        if user is None or not user.is_password(password):
-            return {'message': f"Invalid user id or password"}, 400
         
         ''' authenticated user '''
         return jsonify(user.read())
