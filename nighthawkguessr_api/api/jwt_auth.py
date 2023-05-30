@@ -1,49 +1,42 @@
-from flask import Blueprint, render_template, redirect, url_for, request, jsonify, make_response
+from datetime import datetime, timedelta
+from flask import Blueprint, current_app, jsonify, make_response, request
 from flask_login import login_required, logout_user, login_user
 from functools import wraps
-import jwt
-from nighthawkguessr_api.model.user import User
 from http import cookies
+from nighthawkguessr_api import app, db, project_path
+from nighthawkguessr_api.model.user import User
 import bcrypt
-from bcrypt import gensalt
-from nighthawkguessr_api.forms import RegisterForm, LoginForm
-from nighthawkguessr_api.model.user import db
-from flask import current_app
+import jwt
 
 jwt_bp = Blueprint('jwt_auth', __name__)
 
-
-
 def token_required(f):
-   @wraps(f)
-   def decorator(*args, **kwargs):
-       token = None
-       # Grabs the cookie from request  headers
-       cookieString = request.headers.get('Cookie')
-       # loads the cookie into cookie object
-       if cookieString:
-           cookie = cookies.SimpleCookie()
-           cookie.load(cookieString)
-            # if token exist then it grabs the token from the cookie
-           if 'token' in cookie:
-               token = cookie['token'].value
- 
-        # if no token exits it shows a message saying valid token is missing 
-       if not token:
-           return jsonify({'message': 'a valid token is missing'})
-        # this code tries to verify the signature of the token by decoding it.
-       try:
-           data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-           current_user = User.query.filter_by(username=data['name']).first()
-        # if signature is not valid or it is not able to decode it writes a message saying token is invalid. 
-       except:
-           return jsonify({'message': 'token is invalid'})
-        # returns current user
-       return f(current_user, *args, **kwargs)
-       # returns the decorator
-   return decorator
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        token = None
+        cookieString = request.headers.get('Cookie')
 
-from flask import request
+        if cookieString:
+            cookie = cookies.SimpleCookie()
+            cookie.load(cookieString)
+
+            if 'token' in cookie:
+                token = cookie['token'].value
+
+        if not token:
+            return jsonify({'message': 'a valid token is missing'})
+
+        try:
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.filter_by(username=data['name']).first()
+        except:
+            return jsonify({'message': 'token is invalid'})
+
+        return f(current_user, *args, **kwargs)
+
+    return decorator
+
+
 @jwt_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -55,10 +48,10 @@ def register():
 
     if user:
         return jsonify({'message': 'User already exists. Please Log in.'}), 400
-
-    hashed_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')  # ensure the hashed password is in string format
-
+ 
+    hashed_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     new_user = User(username=data.get('username'), password=hashed_password)
+
     db.session.add(new_user)
     db.session.commit()
 
@@ -68,24 +61,23 @@ def register():
 @jwt_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    user = User.query.filter_by(username=data.get('username')).first()
-    if user and bcrypt.checkpw(data.get('password').encode('utf-8'), user.password.encode('utf-8')):
-        token = jwt.encode(payload= {'name': user.username}, key=current_app.config['SECRET_KEY'], algorithm="HS256")
-        return jsonify({'token': token}), 200  # 200 is a typical HTTP status code for a successful request
-    return jsonify({'message': 'Invalid username or password'}), 401  # 401 is a typical HTTP status code for unauthorized access
+    username = data.get('username')
+    password = data.get('password')
 
+    user = User.query.filter_by(username=username).first()
 
-@jwt_bp.route('/dashboard', methods=['GET', 'POST'])
-@token_required
-def dashboard(temp):
-    return render_template('index.html')
-# This redirects to dashboard page ones loged in, and log in succesful is required.
+    if user is None or not user.check_password(password):
+        return jsonify({'message': 'Invalid username or password'}), 400
 
-@jwt_bp.route('/logout', methods=['GET', 'POST'])
-@token_required
-def logout(temp):
-    logout_user()
-    response = make_response(redirect(url_for('login')))
-    response.set_cookie('token', expires=0)
+    token = jwt.encode(payload= {'name': user.username}, key=current_app.config['SECRET_KEY'], algorithm="HS256")
+
+    expires = datetime.now()
+    expires = expires + timedelta(days=30)
+
+    response = make_response(jsonify({'message': 'Logged in'}), 200)
+    response.set_cookie('token', token, secure=True, samesite='None', path='/')
+
     return response
+
+
 
