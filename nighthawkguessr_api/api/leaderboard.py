@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_restful import Api, Resource, reqparse
 from nighthawkguessr_api import db
 from nighthawkguessr_api.model.leaderboards import Leaderboard
+import base64
 
 leaderboard_bp = Blueprint("leaderboards", __name__, url_prefix="/api/leaderboard")
 leaderboard_api = Api(leaderboard_bp)
@@ -179,31 +180,51 @@ class LeaderboardTop10(Resource):
         
         return top10all
 # Leaderboard Security provides Authentication mechanism    
-class LeaderboardSecurity(Resource):
+# class LeaderboardSecurity(Resource):
 
+#     def post(self):
+#         ''' Read data for json body '''
+#         body = request.get_json()
+        
+#         ''' Get Data '''
+#         username = body.get('username')
+#         if username is None or len(username) < 1:
+#             return {'message': f'User ID is missing, or is less than 2 characters'}, 400
+#         password = body.get('password')
+#         # print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
+#         # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
+        
+#         ''' Find user '''
+#         user = Leaderboard.query.filter_by(_username=username).first()          
+#         if user is None or not user.is_password(password):
+#             return {'message': f"Invalid user id or password"}, 400
+        
+#         ''' authenticated user '''
+#         return jsonify(user.read())
+
+
+class _Authenticate(Resource):
     def post(self):
-        ''' Read data for json body '''
         body = request.get_json()
-        
-        ''' Get Data '''
         username = body.get('username')
-        if username is None or len(username) < 1:
-            return {'message': f'User ID is missing, or is less than 2 characters'}, 400
         password = body.get('password')
-        # print("LeaderboardSecurity: post(): username: " + username + " password: " + password)
-        # print("LeaderboardSecurity: post(): password-hash: " + generate_password_hash(password))
-        
-        ''' Find user '''
-        user = Leaderboard.query.filter_by(_username=username).first()          
-        if user is None or not user.is_password(password):
-            return {'message': f"Invalid user id or password"}, 400
-        
-        ''' authenticated user '''
-        return jsonify(user.read())
+        if len(username) < 1:
+            return {'message': f'Invalid username'}, 210
+        if len(password) < 1:
+            return {'message': f'Empty Password'}, 210
+        user = find_by_username(username)
+        print(user)
+        if user.is_password(password):
+            pwbytes=password.encode("ascii")
+            b64pw_bytes=base64.b64encode(pwbytes)
+            unique=str(b64pw_bytes)[3:11]
+            return username + ":" + unique
+        return None
 
 # Leaderboard APIs
 
 leaderboard_api.add_resource(LeaderboardAPI, "/leaderboard")
 leaderboard_api.add_resource(LeaderboardListAPI, "/leaderboardList")
 leaderboard_api.add_resource(LeaderboardTop10, "/leaderboardTop10")
-leaderboard_api.add_resource(LeaderboardSecurity, "/authenticate")
+# leaderboard_api.add_resource(LeaderboardSecurity, "/authenticate")
+leaderboard_api.add_resource(_Authenticate, "/auth")
