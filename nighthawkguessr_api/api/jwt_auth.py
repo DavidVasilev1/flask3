@@ -1,91 +1,74 @@
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify, make_response
 from flask_login import login_required, logout_user, login_user
 from functools import wraps
-import jwt
-from nighthawkguessr_api.model.user import User
 from http import cookies
 import bcrypt
 from bcrypt import gensalt
-from nighthawkguessr_api.forms import RegisterForm, LoginForm
 from nighthawkguessr_api.model.user import db
 from flask import current_app
+from nighthawkguessr_api import app, db, project_path
+from datetime import datetime, timedelta
+import jwt
+from nighthawkguessr_api.model.user import User, db
+
+
 
 jwt_bp = Blueprint('jwt_auth', __name__)
+# Creating a blueprint for jwt_auth related routes
 
 
-
-def token_required(f):
-   @wraps(f)
-   def decorator(*args, **kwargs):
-       token = None
-       # Grabs the cookie from request  headers
-       cookieString = request.headers.get('Cookie')
-       # loads the cookie into cookie object
-       if cookieString:
-           cookie = cookies.SimpleCookie()
-           cookie.load(cookieString)
-            # if token exist then it grabs the token from the cookie
-           if 'token' in cookie:
-               token = cookie['token'].value
- 
-        # if no token exits it shows a message saying valid token is missing 
-       if not token:
-           return jsonify({'message': 'a valid token is missing'})
-        # this code tries to verify the signature of the token by decoding it.
-       try:
-           data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-           current_user = User.query.filter_by(username=data['name']).first()
-        # if signature is not valid or it is not able to decode it writes a message saying token is invalid. 
-       except:
-           return jsonify({'message': 'token is invalid'})
-        # returns current user
-       return f(current_user, *args, **kwargs)
-       # returns the decorator
-   return decorator
-
-from flask import request
 @jwt_bp.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
+   # Getting the request data as json
+   data = request.get_json()
+   # Checking if the required data (username, password) are present
+   if not data or not data.get('username') or not data.get('password'):
+       # If not, return a JSON response with a message and a 400 status code
+       return jsonify({'message': 'Username or password field is empty.'}), 400
+   # Querying the User table to check if a user with the provided username already exists
+   user = User.query.filter_by(username=data.get('username')).first()
 
-    if not data or not data.get('username') or not data.get('password'):
-        return jsonify({'message': 'Username or password field is empty.'}), 400
 
-    user = User.query.filter_by(username=data.get('username')).first()
+   # If a user is found, return a JSON response with a message and a 400 status code
+   if user:
+       return jsonify({'message': 'User already exists. Please Log in.'}), 400
 
-    if user:
-        return jsonify({'message': 'User already exists. Please Log in.'}), 400
 
-    hashed_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')  # ensure the hashed password is in string format
-
-    new_user = User(username=data.get('username'), password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({'message': 'New user created!'}), 201
-
+   # If a user was not found, the password is hashed using bcrypt
+   hashed_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')  # ensure the hashed password is in string format
+   # A new User object is created with the provided username and hashed password
+   new_user = User(username=data.get('username'), password=hashed_password)
+   # The new User object is added to the db session
+   db.session.add(new_user)
+   # The db session is committed to save the changes
+   db.session.commit()
+   # A JSON response is returned with a message and a 201 status code
+   return jsonify({'message': 'New user created!'}), 201
 
 @jwt_bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    user = User.query.filter_by(username=data.get('username')).first()
-    if user and bcrypt.checkpw(data.get('password').encode('utf-8'), user.password.encode('utf-8')):
-        token = jwt.encode(payload= {'name': user.username}, key=current_app.config['SECRET_KEY'], algorithm="HS256")
-        return jsonify({'token': token}), 200  # 200 is a typical HTTP status code for a successful request
-    return jsonify({'message': 'Invalid username or password'}), 401  # 401 is a typical HTTP status code for unauthorized access
+   # get the username and password from the request
+   data = request.get_json()
+   username = data.get('username')
+   password = data.get('password')
 
+   # authenticate the user, for example by checking the username and password against a database
+   user = User.query.filter_by(username=username).first()
 
-@jwt_bp.route('/dashboard', methods=['GET', 'POST'])
-@token_required
-def dashboard(temp):
-    return render_template('index.html')
-# This redirects to dashboard page ones loged in, and log in succesful is required.
+   # if the user doesn't exist or the password is wrong, return an error
+   if user is None or not user.check_password(password):
+       return jsonify({'message': 'Invalid username or password'}), 400
 
-@jwt_bp.route('/logout', methods=['GET', 'POST'])
-@token_required
-def logout(temp):
-    logout_user()
-    response = make_response(redirect(url_for('login')))
-    response.set_cookie('token', expires=0)
-    return response
+   # if the user is authenticated, create a JWT token for them
+   token = jwt.encode(payload= {'name': user.username}, key=current_app.config['SECRET_KEY'], algorithm="HS256")
+   print("Token:", token)
 
+   expires = datetime.now()
+   expires = expires + timedelta(days=30) # expires in 30 days
+   # set the JWT token in a secure HTTP-only cookie in the response
+
+   response = make_response(jsonify({'message': 'Logged in'}), 200)
+   response.set_cookie('token', token, secure=False, samesite='Lax', path='/', httponly=True)
+  
+   print(response.headers)
+   return response
