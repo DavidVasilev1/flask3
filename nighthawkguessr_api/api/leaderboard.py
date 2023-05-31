@@ -215,11 +215,31 @@ class _Authenticate(Resource):
         user = find_by_username(username)
         print(user)
         if user.is_password(password):
+            password = user.getFullPassword()
             pwbytes=password.encode("ascii")
             b64pw_bytes=base64.b64encode(pwbytes)
-            unique=str(b64pw_bytes)[3:11]
+            unique=str(b64pw_bytes)[15:25]
             return username + ":" + unique
         return None
+    
+class _wap(Resource):
+    def post(self):
+        body = request.get_json()
+        username = body.get('username')
+        key = body.get('key')
+        if len(username) < 1:
+            return {'message': f'Invalid username'}, 210
+        if len(key) < 1:
+            return {'message': f'Empty key'}, 210
+        user = find_by_username(username)
+        password = user.getFullPassword()
+        pwbytes=password.encode("ascii")
+        b64pw_bytes=base64.b64encode(pwbytes)
+        unique=str(b64pw_bytes)[15:25]
+        print(unique)
+        if key == unique:
+            return True
+        return False
 
 # Leaderboard APIs
 
@@ -228,3 +248,4 @@ leaderboard_api.add_resource(LeaderboardListAPI, "/leaderboardList")
 leaderboard_api.add_resource(LeaderboardTop10, "/leaderboardTop10")
 # leaderboard_api.add_resource(LeaderboardSecurity, "/authenticate")
 leaderboard_api.add_resource(_Authenticate, "/auth")
+leaderboard_api.add_resource(_wap, "/wap")

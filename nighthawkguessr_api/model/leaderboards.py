@@ -107,7 +107,9 @@ class Leaderboard(db.Model):
     @property
     def password(self):
         return self._password[0:10] + "..."
-
+    
+    def getFullPassword(self):
+        return self._password
     # 
     # Sets Leaderboard password
     #        
