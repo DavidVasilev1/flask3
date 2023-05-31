@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, Text
 from nighthawkguessr_api import db
 from sqlalchemy.exc import IntegrityError
 import json
-from werkzeug.security import generate_password_hash, check_password_hash
 
 # 
 # Leaderboard DB class that maps leaderboard SQL table 
@@ -12,7 +11,6 @@ class Leaderboard(db.Model):
 
     id = Column(Integer, primary_key=True)
     _username = Column(String(255), unique=True, nullable=False)
-    _password = Column(String(255), nullable=False)
     _pointsEasy = Column(Integer, nullable=False)
     _pointsMedium = Column(Integer, nullable=False)
     _pointsHard = Column(Integer, nullable=False)
@@ -20,9 +18,8 @@ class Leaderboard(db.Model):
     # 
     # Leaderboard DB class constructor 
     #
-    def __init__(self, username, password, pointsEasy, pointsMedium, pointsHard):
+    def __init__(self, username, pointsEasy, pointsMedium, pointsHard):
         self._username = username
-        self.set_password(password)
         self._pointsEasy = pointsEasy
         self._pointsMedium = pointsMedium
         self._pointsHard = pointsHard
@@ -101,6 +98,7 @@ class Leaderboard(db.Model):
     def pointsHard(self, value):
         self._pointsHard = value
 
+
     # 
     # Returns Leaderboard password
     #            
@@ -130,7 +128,7 @@ class Leaderboard(db.Model):
     # Converts Leaderboard to dictionary
     #            
     def to_dict(self):
-        return {"id": self.id, "username": self.username, "password": self.password, "pointsEasy": self._pointsEasy, "pointsMedium": self._pointsMedium, "pointsHard": self._pointsHard}
+        return {"id": self.id, "username": self.username, "pointsEasy": self._pointsEasy, "pointsMedium": self._pointsMedium, "pointsHard": self._pointsHard}
 
     # 
     # Converts Leaderboard to string values
@@ -160,7 +158,6 @@ class Leaderboard(db.Model):
         return {
             "id": self.id,
             "username": self.username,
-            "password": self.password,
             "pointsEasy": self.pointsEasy,
             "pointsMedium": self.pointsMedium,
             "pointsHard": self.pointsHard
@@ -169,7 +166,7 @@ class Leaderboard(db.Model):
     # 
     # Updates Leaderboard DB rows for points and user data
     #                
-    def update(self, username="", password="", pointsEasy="", pointsMedium="", pointsHard=""):
+    def update(self, username="", pointsEasy="", pointsMedium="", pointsHard=""):
         """only updates values with length"""
         print(username, password, pointsEasy, pointsMedium, pointsHard)
         if (username) != None:
@@ -182,6 +179,7 @@ class Leaderboard(db.Model):
             self.pointsHard = pointsHard
         if (password) != None:
             self.set_password(password)
+
         db.session.add(self)
         db.session.commit()
         return self
@@ -201,29 +199,29 @@ def init_leaderboards():
     """Create database and tables"""
     # db.create_all()
     """Tester data for table"""
-    l1 = Leaderboard(username="bob", password="apple",
+    l1 = Leaderboard(username="bob",
                      pointsEasy=100, pointsMedium=700, pointsHard=1200)
-    l2 = Leaderboard(username="bobby", password="appley",
+    l2 = Leaderboard(username="bobby",
                      pointsEasy=200, pointsMedium=800, pointsHard=1100)
-    l3 = Leaderboard(username="bobbert", password="appled",
+    l3 = Leaderboard(username="bobbert",
                      pointsEasy=300, pointsMedium=900, pointsHard=1000)
-    l4 = Leaderboard(username="bobruth", password="appler",
+    l4 = Leaderboard(username="bobruth",
                      pointsEasy=400, pointsMedium=1000, pointsHard=900)
-    l5 = Leaderboard(username="joe", password="pear",
+    l5 = Leaderboard(username="joe",
                      pointsEasy=500, pointsMedium=1100, pointsHard=800)
-    l6 = Leaderboard(username="jo", password="peary",
+    l6 = Leaderboard(username="jo",
                      pointsEasy=600, pointsMedium=1200, pointsHard=700)
-    l7 = Leaderboard(username="john", password="peared",
+    l7 = Leaderboard(username="john",
                      pointsEasy=700, pointsMedium=100, pointsHard=600)
-    l8 = Leaderboard(username="jon", password="peary",
+    l8 = Leaderboard(username="jon",
                      pointsEasy=800, pointsMedium=200, pointsHard=500)
-    l9 = Leaderboard(username="jonny", password="pears",
+    l9 = Leaderboard(username="jonny",
                      pointsEasy=900, pointsMedium=300, pointsHard=400)
-    l10 = Leaderboard(username="johny", password="pearr",
+    l10 = Leaderboard(username="johny",
                      pointsEasy=1000, pointsMedium=400, pointsHard=300)
-    l11 = Leaderboard(username="johnathan", password="peer",
+    l11 = Leaderboard(username="johnathan",
                      pointsEasy=1100, pointsMedium=500, pointsHard=200)
-    l12 = Leaderboard(username="jean", password="pair",
+    l12 = Leaderboard(username="jean",
                      pointsEasy=1200, pointsMedium=600, pointsHard=100)
     leaderboards = [l1, l2, l3, l4,l5,l6,l7,l8,l9,l10,l11,l12]
 
