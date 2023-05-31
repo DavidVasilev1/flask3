@@ -136,7 +136,11 @@ class Leaderboard(db.Model):
     # Converts Leaderboard to string values
     #                
     def __str__(self):
-        return json.dumps(self.read())
+        try:
+            return json.dumps(self.read())
+        except:
+            return self.read()
+
 
     # 
     # Creates Leaderboard database
@@ -167,15 +171,16 @@ class Leaderboard(db.Model):
     #                
     def update(self, username="", password="", pointsEasy="", pointsMedium="", pointsHard=""):
         """only updates values with length"""
-        if len(username) > 0:
+        print(username, password, pointsEasy, pointsMedium, pointsHard)
+        if (username) != None:
             self.username = username
-        if len(pointsEasy) > 0:
+        if (pointsEasy) != None:
             self.pointsEasy = pointsEasy
-        if len(pointsMedium) > 0:
+        if (pointsMedium) != None:
             self.pointsMedium = pointsMedium
-        if len(pointsHard) > 0:
+        if (pointsHard) != None:
             self.pointsHard = pointsHard
-        if len(password) > 0:
+        if (password) != None:
             self.set_password(password)
         db.session.add(self)
         db.session.commit()
