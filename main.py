@@ -6,6 +6,7 @@ from nighthawkguessr_api import app, db, project_path
 from pathlib import Path
 from nighthawkguessr_api.api.todo import todo_bp
 from flask import send_from_directory
+from nighthawkguessr_api.model.user import User, db
 from nighthawkguessr_api.model.images import initEasyImages
 from nighthawkguessr_api.model.images import initMediumImages
 from nighthawkguessr_api.model.images import initHardImages
@@ -60,6 +61,6 @@ def send_report(path):
 
 
 if __name__ == "__main__":
-    cors = CORS(app, resources={r"*": {"origins": "*"}})
+    cors = CORS(app, resources={r"*": {"origins": "http://localhost:4000"}},supports_credentials=True)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./volumes/sqlite.db"
-    app.run(debug=True, host="0.0.0.0", port="8570")
+    app.run(debug=True, host="0.0.0.0", port="8200")
