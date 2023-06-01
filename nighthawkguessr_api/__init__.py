@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from pathlib import Path
 import os
 
@@ -20,7 +19,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+file_path
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "SECRET_KEY"
 db = SQLAlchemy(app)
-Migrate(app, db)
 
 # Images storage
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # maximum size of uploaded content

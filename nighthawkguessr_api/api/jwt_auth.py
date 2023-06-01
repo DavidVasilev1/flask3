@@ -68,7 +68,7 @@ def login():
    # set the JWT token in a secure HTTP-only cookie in the response
 
    response = make_response(jsonify({'message': 'Logged in'}), 200)
-   response.set_cookie('token', token, secure=False, samesite='Lax', path='/', httponly=True)
+   response.set_cookie('token', token, secure=True, samesite='None', path='/', httponly=True)
   
    print(response.headers)
    return response
