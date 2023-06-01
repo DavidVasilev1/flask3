@@ -4,7 +4,7 @@ services:
     image: nighthawkguessr
     build: .
     ports:
-      - "8570:8080"
+      - "8571:8080"
     volumes:
       - ./nighthawkguessr_api/volumes:/volumes
     restart: unless-stopped
