@@ -53,4 +53,4 @@ def send_report(path):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port="8571")
+    app.run(debug=True, host="127.0.0.1", port="8200")
