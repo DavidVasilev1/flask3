@@ -99,30 +99,6 @@ class Leaderboard(db.Model):
         self._pointsHard = value
 
 
-    # 
-    # Returns Leaderboard password
-    #            
-    @property
-    def password(self):
-        return self._password[0:10] + "..."
-    
-    def getFullPassword(self):
-        return self._password
-    # 
-    # Sets Leaderboard password
-    #        
-    def set_password(self, password):
-        self._password = generate_password_hash(password, method='sha512')
-
-    # 
-    # Checks Leaderboard password validity
-    #            
-    def is_password(self, password):
-        result = check_password_hash(self._password, password)
-        if result:
-            return True
-        else:
-            return False
 
     # 
     # Converts Leaderboard to dictionary
@@ -168,7 +144,7 @@ class Leaderboard(db.Model):
     #                
     def update(self, username="", pointsEasy="", pointsMedium="", pointsHard=""):
         """only updates values with length"""
-        print(username, password, pointsEasy, pointsMedium, pointsHard)
+        print(username, pointsEasy, pointsMedium, pointsHard)
         if (username) != None:
             self.username = username
         if (pointsEasy) != None:
@@ -177,8 +153,7 @@ class Leaderboard(db.Model):
             self.pointsMedium = pointsMedium
         if (pointsHard) != None:
             self.pointsHard = pointsHard
-        if (password) != None:
-            self.set_password(password)
+
 
         db.session.add(self)
         db.session.commit()

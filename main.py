@@ -12,10 +12,17 @@ from nighthawkguessr_api.api.leaderboard import leaderboard_bp
 from nighthawkguessr_api.model.leaderboards import init_leaderboards
 from nighthawkguessr_api.api.leaderboard import leaderboard_bp
 from nighthawkguessr_api.api.images import images_bp
+from nighthawkguessr_api.api import jwt_auth 
 from nighthawkguessr_api.api.jwt_auth import jwt_bp
 from nighthawkguessr_api.api.pass_api import pass_api, getPassAPI
+from flask_jwt import JWT
+
 
 cors = CORS(app, origins=re.compile(".*"), supports_credentials=True)
+jwt = JWT(app, jwt_auth.authenticate, jwt_auth.identity)
+
+
+
 
 app.register_blueprint(todo_bp)
 app.register_blueprint(leaderboard_bp)
@@ -53,4 +60,4 @@ def send_report(path):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="127.0.0.1", port="8200")
+    app.run(debug=True, host="127.0.0.1", port="8570")

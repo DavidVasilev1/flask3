@@ -15,7 +15,7 @@ app = Flask(__name__)
 project_path = Path.cwd().as_posix()
 # Setup SQLAlchemy object and properties for the database (db)
 file_path = os.path.abspath(os.getcwd())+"/nighthawkguessr_api/volumes/sqlite.db"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'+file_path
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+file_path
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "SECRET_KEY"
 db = SQLAlchemy(app)

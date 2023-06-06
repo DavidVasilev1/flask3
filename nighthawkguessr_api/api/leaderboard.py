@@ -39,33 +39,19 @@ class LeaderboardAPI(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("username", required=True, type=str)
-        parser.add_argument("password", required=False, type=str)
-        parser.add_argument("key", required=False, type=str)
         parser.add_argument("pointsEasy", required=False, type=int)
         parser.add_argument("pointsMedium", required=False, type=int)
         parser.add_argument("pointsHard", required=False, type=int)
         args = parser.parse_args()
-        if args["password"] is None:
-            # check key for valid user
-            user = find_by_username(args["username"])
-            password = user.getFullPassword()
-            pwbytes=password.encode("ascii")
-            b64pw_bytes=base64.b64encode(pwbytes)
-            unique=str(b64pw_bytes)[15:25]
-            if args["key"] == unique:
-                user.update(None, None, args["pointsEasy"], args["pointsMedium"], args["pointsHard"])
-                return "Successfully updated values", 200
-            return "Invalid secret key", 401
-        else:
-            leaderboard = Leaderboard(args["username"], args["password"],
-                                      args["pointsEasy"], args["pointsMedium"], args["pointsHard"])
-            try:
-                db.session.add(leaderboard)
-                db.session.commit()
-                return leaderboard.to_dict(), 201
-            except Exception as e:
-                db.session.rollback()
-                return {"message": f"server error: {e}"}, 500
+        leaderboard = Leaderboard(args["username"], args["password"],
+                                     args["pointsEasy"], args["pointsMedium"], args["pointsHard"])
+        try:
+            db.session.add(leaderboard)
+            db.session.commit()
+            return leaderboard.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {"message": f"server error: {e}"}, 500
 
     def put(self):
         username = request.get_json().get("username")
