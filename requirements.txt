@@ -2,10 +2,10 @@ Flask==2.2.2
 requests==2.22.0
 SQLAlchemy==1.4.46
 Werkzeug==2.2.2
-Flask_Login==0.6.2
 Flask_SqlAlchemy==3.0.2
 Flask_Restful==0.3.9
 Flask_Cors==3.0.10
 bcrypt==4.0.1
 flask_wtf==1.1.1
-Flask-JWT
+# Vendored version of git+https://github.com/AnuragBalhra/flask-jwt.git@295be53c4837d0c3c23fc1eeb05ff707adc43803
+-e file:./vendor/flask-jwt#egg=Flask-JWT

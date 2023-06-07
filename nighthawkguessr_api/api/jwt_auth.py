@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, redirect, url_for, request, jsonify, make_response
-from flask_login import login_required, logout_user, login_user
 from functools import wraps
 from http import cookies
 import bcrypt
@@ -9,8 +8,7 @@ from flask import current_app
 from nighthawkguessr_api import app, db, project_path
 from datetime import datetime, timedelta
 from nighthawkguessr_api.model.user import User, db
-from werkzeug.security import hmac
-from flask_jwt import JWT
+from flask_jwt import jwt_required, current_identity
 
 
 jwt_bp = Blueprint('jwt_auth', __name__)
@@ -18,12 +16,20 @@ jwt_bp = Blueprint('jwt_auth', __name__)
 
 def authenticate(username, password):
     user = User.query.filter_by(username=username).one_or_none()
-    if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):
+    if not user:
+        return None
+
+    if bcrypt.checkpw(password.encode('utf-8'), user.password):
         return user
 
 def identity(payload):
     user_id = payload['identity']
     return User.query.filter_by(id=user_id).one_or_none()
+
+@jwt_bp.route('/auth_status', methods=['GET'])
+@jwt_required()
+def auth_status():
+    return jsonify({'username': current_identity.username})
 
 @jwt_bp.route('/register', methods=['POST'])
 def register():
@@ -35,7 +41,7 @@ def register():
        return jsonify({'message': 'User already exists. Please Log in.'}), 400
 
 
-   hashed_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()).decode('utf-8')  # ensure the hashed password is in string format
+   hashed_password = bcrypt.hashpw(data.get('password').encode('utf-8'), bcrypt.gensalt()) 
    new_user = User(username=data.get('username'), password=hashed_password)
    db.session.add(new_user)
    db.session.commit()
